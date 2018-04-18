@@ -49,7 +49,6 @@ public class ForecastFragment extends Fragment {
         listView.setAdapter(forecastAdapter);
 
 
-
         return rootView;
 
     }
@@ -57,7 +56,8 @@ public class ForecastFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /**Allow the fragment to handle menu events**/
+        /**Allow the fragment to handle menu events
+         * (we want callbacks for this method)**/
         setHasOptionsMenu(true);
     }
 
@@ -70,8 +70,12 @@ public class ForecastFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         /**If refresh was selected, return true**/
-        if(id == R.id.action_refresh)
+        if(id == R.id.action_refresh) {
+            FetchWeatherTask weatherTask = new FetchWeatherTask();
+            weatherTask.execute();
             return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -128,6 +132,10 @@ public class ForecastFragment extends Fragment {
                     return null; //stream is empty, can't parse it
 
                 forecastJsonStr = buffer.toString();
+                /**output the network data to the logger to
+                 * verify we got all the JSON stuff correctly.
+                 */
+                Log.v(LOG_TAG, "Forecast JSON String: " + forecastJsonStr);
             } catch(IOException e){
                 /**Failed to fetch weather data. Can't parse it**/
                 Log.e(LOG_TAG,"Error", e);
