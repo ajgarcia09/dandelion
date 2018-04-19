@@ -1,6 +1,7 @@
 package edu.utep.cs.cs4330.dandelion;
 
 import android.app.Fragment;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -72,18 +73,25 @@ public class ForecastFragment extends Fragment {
         /**If refresh was selected, return true**/
         if(id == R.id.action_refresh) {
             FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute();
+            weatherTask.execute("5420926");
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    public class FetchWeatherTask extends AsyncTask<Void, Void, Void>{
+    public class FetchWeatherTask extends AsyncTask<String, Void, Void>{
 
         private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected Void doInBackground(String... params) {
+            /**If there's no zip code, there's nothing to look up.
+             * (Verify the size of params)
+             */
+
+           if(params.length == 0)
+              return null;
+
             /**Need to be declared outside the try/catch
              * block so they will be closed in the finally block
              */
@@ -94,6 +102,11 @@ public class ForecastFragment extends Fragment {
             /**Will contain the raw JSON response as a string**/
 
             String forecastJsonStr = null;
+            String format = "json";
+            String units = "metric";
+            int numDays = 7;
+            String cityId = "5420926";
+            String apiKey = "c262b4ba92b7f829dd3e440b8658d0b1";
 
             try{
                 /**Construct the URL for the OpenWeatherMap query.
@@ -101,7 +114,32 @@ public class ForecastFragment extends Fragment {
                  * http://openweathermap.org/API#forecast
                  */
 
-                URL url = new URL("http://api.openweathermap.org/data/2.5/forecast?id=5420926&APPID=c262b4ba92b7f829dd3e440b8658d0b1");
+                final String FORECAST_BASE_URL = "http://api.openweathermap.org/data/2.5/forecast?";
+                final String ID_PARAM = "id"; //El Paso's Open Weather Map City ID
+                //final String QUERY_PARAM = "q";
+                //final String FORMAT_PARAM = "mode";
+                //final String UNITS_PARAM = "units";
+                //final String DAYS_PARAM = "cnt";
+                final String APIKEY_PARAM = "APPID";
+
+
+//                Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+//                        .appendQueryParameter(ID_PARAM, cityId)
+//                        .appendQueryParameter(APIKEY_PARAM, apiKey)
+//                        .appendQueryParameter(QUERY_PARAM, params[0])
+//                        .appendQueryParameter(FORMAT_PARAM, format)
+//                        .appendQueryParameter(UNITS_PARAM, units)
+//                        .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays)).build();
+
+                Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+                        .appendQueryParameter(ID_PARAM, cityId)
+                        .appendQueryParameter(APIKEY_PARAM, apiKey).build();
+
+                URL url = new URL(builtUri.toString());
+
+                Log.v(LOG_TAG, "Built URI: " + builtUri.toString());
+                //http://api.openweathermap.org/data/2.5/forecast?id=5420926&APPID=c262b4ba92b7f829dd3e440b8658d0b1
+                //URL url = new URL("http://api.openweathermap.org/data/2.5/forecast?id=5420926&APPID=c262b4ba92b7f829dd3e440b8658d0b1");
 
                 /**Create the request to OpenWeatherMap
                  * and open the connection
