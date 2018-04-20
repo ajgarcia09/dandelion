@@ -285,11 +285,14 @@ public class ForecastFragment extends Fragment {
 
                 final String FORECAST_BASE_URL = "http://api.openweathermap.org/data/2.5/forecast?";
                 final String ID_PARAM = "id"; //El Paso's Open Weather Map City ID
+                final String UNITS_PARAM = "units";
                 final String APIKEY_PARAM = "APPID";
+
 
 
                 Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
                         .appendQueryParameter(ID_PARAM, cityId)
+                        .appendQueryParameter(UNITS_PARAM,units)
                         .appendQueryParameter(APIKEY_PARAM, apiKey).build();
 
                 URL url = new URL(builtUri.toString());
