@@ -38,6 +38,8 @@ import java.util.ArrayList;
  */
 
 public class ForecastFragment extends Fragment {
+
+    private ArrayAdapter<String> forecastAdapter;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState){
@@ -51,7 +53,7 @@ public class ForecastFragment extends Fragment {
         weekForecast.add("Tuesday - Rainy - 65/80");
         weekForecast.add("Wednesday - Sunny - 70/85");
 
-        ArrayAdapter<String> forecastAdapter = new ArrayAdapter<String>(this.getActivity(),R.layout.list_item_forecast,
+        forecastAdapter = new ArrayAdapter<String>(this.getActivity(),R.layout.list_item_forecast,
                 R.id.list_item_forecast_textview,weekForecast);
 
         //Get a reference to the listView, attach it to this adapter.
@@ -217,6 +219,8 @@ public class ForecastFragment extends Fragment {
             return resultStrs;
         }
 
+
+
         /**The date/time conversion code is going to be moved outside the asynctask later,
          * so for convenience we're breaking it out into its own method now.
          * @param time
@@ -359,6 +363,16 @@ public class ForecastFragment extends Fragment {
             }
             Log.e(LOG_TAG, "Returned empty array, try-catch failed");
             return new String[0];
+        }
+
+        @Override
+        protected void onPostExecute(String[] result) {
+            if(result != null){
+                forecastAdapter.clear();
+                //new weather data
+                forecastAdapter.addAll(result);
+
+            }
         }
     }
 
