@@ -11,7 +11,7 @@
     <!-- key name for storing location in SharedPreferences [CHAR LIMIT = NONE] -->
     <string name="pref_location_key" translatable="false">location</string>
 
-    <!-- default city ID for the location preference [CHAR LIMIT = NONE] -->
+    <!-- default zip code for the location preference [CHAR LIMIT = NONE] -->
     <string name="pref_location_default" translatable="false">79952</string>
 
 </resources>
