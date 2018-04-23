@@ -295,7 +295,8 @@ public class ForecastFragment extends Fragment {
             String format = "json";
             String units = "metric";
             int numDays = 7;
-            String cityId = "5520993";
+            String zipCode = "79952";
+            //String cityId = "5520993";
             String apiKey = "c262b4ba92b7f829dd3e440b8658d0b1";
 
             try{
@@ -306,13 +307,14 @@ public class ForecastFragment extends Fragment {
 
                 final String FORECAST_BASE_URL = "http://api.openweathermap.org/data/2.5/forecast?";
                 final String ID_PARAM = "id"; //El Paso's Open Weather Map City ID
+                final String ZIPCODE_PARAM = "zip";
                 final String UNITS_PARAM = "units";
                 final String APIKEY_PARAM = "APPID";
 
 
 
                 Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
-                        .appendQueryParameter(ID_PARAM, cityId)
+                        .appendQueryParameter(ZIPCODE_PARAM, zipCode)
                         .appendQueryParameter(UNITS_PARAM,units)
                         .appendQueryParameter(APIKEY_PARAM, apiKey).build();
 
@@ -320,10 +322,11 @@ public class ForecastFragment extends Fragment {
 
                 Log.v(LOG_TAG, "Built URI: " + builtUri.toString());
                 //http://api.openweathermap.org/data/2.5/forecast?id=5420926&APPID=c262b4ba92b7f829dd3e440b8658d0b1
-                //new & correct:
+                //new & correct (with city ID):
                 //http://api.openweathermap.org/data/2.5/forecast?id=5520993&units=metric&APPID=c262b4ba92b7f829dd3e440b8658d0b1
 
-                //URL url = new URL("http://api.openweathermap.org/data/2.5/forecast?id=5420926&APPID=c262b4ba92b7f829dd3e440b8658d0b1");
+                //correct with zip code:
+                //http://api.openweathermap.org/data/2.5/forecast?zip=79952&units=metric&APPID=c262b4ba92b7f829dd3e440b8658d0b1
 
                 /**Create the request to OpenWeatherMap
                  * and open the connection
