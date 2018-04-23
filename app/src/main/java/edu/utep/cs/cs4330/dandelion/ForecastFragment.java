@@ -4,11 +4,13 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.text.format.Time;
 import android.util.Log;
@@ -42,22 +44,18 @@ import java.util.ArrayList;
 
 public class ForecastFragment extends Fragment {
 
+    private final String LOG_TAG = ForecastFragment.class.getSimpleName();
     private ArrayAdapter<String> forecastAdapter;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState){
-        //inflate the layer for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_forecast, container,false);
 
-        ArrayList<String> weekForecast = new ArrayList<String>();
-        weekForecast.add("Today - Sunny - 88/63");
-        weekForecast.add("Tomorrow - Foggy - 70/46");
-        weekForecast.add("Monday - Cloudy - 60/75");
-        weekForecast.add("Tuesday - Rainy - 65/80");
-        weekForecast.add("Wednesday - Sunny - 70/85");
 
         forecastAdapter = new ArrayAdapter<String>(this.getActivity(),R.layout.list_item_forecast,
-                R.id.list_item_forecast_textview,weekForecast);
+                R.id.list_item_forecast_textview,new ArrayList<String>());
+
+        //inflate the layer for this fragment
+        View rootView = inflater.inflate(R.layout.fragment_forecast, container,false);
 
         //Get a reference to the listView, attach it to this adapter.
         //Will supply list item layouts to  the list view based on weekForecast
@@ -97,12 +95,40 @@ public class ForecastFragment extends Fragment {
     }
 
     @Override
+    public void onStart(){
+        super.onStart();
+        updateWeather();
+    }
+
+   /*private void updateWeather(){
+        FetchWeatherTask weatherTask = new FetchWeatherTask();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SharedPreferences.Editor prefsEditor = prefs.edit(); //create an editor for prefs
+        prefsEditor.putString("location",
+                ((EditText) findViewById(R.id.locationEditTextPref)).getText().toString());
+                //(EditText)findViewById(R.id.locationEditTextPref).getText().toString());
+        prefsEditor.commit();
+    }*/
+
+    private void updateWeather(){
+        FetchWeatherTask weatherTask = new FetchWeatherTask();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        //if there's no value stored in prefs
+        String location = prefs.getString(getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default)); //we fall to the default location
+        Log.v(LOG_TAG,"R.string.pref_location_key: " + R.string.pref_location_key);
+        Log.v(LOG_TAG,"R.string.pref_location_default: " + R.string.pref_location_default);
+
+        weatherTask.execute(location);
+        Log.v(LOG_TAG,"Executed weatherTast with location: " + location);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         /**If refresh was selected, return true**/
         if(id == R.id.action_refresh) {
-            FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute("5420926");
+            updateWeather();
             return true;
         }
 
@@ -295,8 +321,8 @@ public class ForecastFragment extends Fragment {
             String format = "json";
             String units = "metric";
             int numDays = 7;
-            String zipCode = "79952";
-            //String cityId = "5520993";
+            Log.v(LOG_TAG,"params[0] = " + params[0]);
+            String zipCode = params[0];
             String apiKey = "c262b4ba92b7f829dd3e440b8658d0b1";
 
             try{
