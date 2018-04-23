@@ -295,7 +295,7 @@ public class ForecastFragment extends Fragment {
             String format = "json";
             String units = "metric";
             int numDays = 7;
-            String cityId = "5420926";
+            String cityId = "5520993";
             String apiKey = "c262b4ba92b7f829dd3e440b8658d0b1";
 
             try{
@@ -320,6 +320,9 @@ public class ForecastFragment extends Fragment {
 
                 Log.v(LOG_TAG, "Built URI: " + builtUri.toString());
                 //http://api.openweathermap.org/data/2.5/forecast?id=5420926&APPID=c262b4ba92b7f829dd3e440b8658d0b1
+                //new & correct:
+                //http://api.openweathermap.org/data/2.5/forecast?id=5520993&units=metric&APPID=c262b4ba92b7f829dd3e440b8658d0b1
+
                 //URL url = new URL("http://api.openweathermap.org/data/2.5/forecast?id=5420926&APPID=c262b4ba92b7f829dd3e440b8658d0b1");
 
                 /**Create the request to OpenWeatherMap
