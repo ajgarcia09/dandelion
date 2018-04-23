@@ -3,6 +3,7 @@ package edu.utep.cs.cs4330.dandelion;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Fragment;
+import android.content.Intent;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -66,7 +67,9 @@ public class ForecastFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 String forecast = forecastAdapter.getItem(position);
-                toast(forecast);
+                Intent intent = new Intent(getActivity(),DetailActivity.class)
+                .putExtra(Intent.EXTRA_TEXT, forecast);
+                startActivity(intent);
             }
         });
 
