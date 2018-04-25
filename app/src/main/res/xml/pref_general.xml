@@ -8,16 +8,18 @@
             android:title="Change My Location"
             android:defaultValue="@string/pref_location_default"
             android:inputType="text"
-            android:singleLine="true"/>
+            android:singleLine="true"
+            android:summary="@string/pref_location_label"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Units">
         <ListPreference
             android:title="Change Units"
             android:key="@string/pref_units_key"
-            android:defaultValue="@string/pref_units_metric"
+            android:defaultValue="@string/pref_units_celsius"
             android:entryValues="@array/pref_units_values"
             android:entries="@array/pref_units_options"
+            android:summary="@string/pref_units_label"
             />
     </PreferenceCategory>
 </PreferenceScreen>

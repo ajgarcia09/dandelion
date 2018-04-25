@@ -1,12 +1,16 @@
 package edu.utep.cs.cs4330.dandelion;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
-
+    private final String LOG_TAG = MainActivity.class.getSimpleName();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,6 +28,34 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(this,SettingsActivity.class));
             return true;
         }
+        if(id == R.id.action_map){
+            openPreferredLocationInMap();
+        }
         return super.onOptionsItemSelected(item);
     }
+
+    private void openPreferredLocationInMap(){
+        //get the current location from preferences
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String location = sharedPrefs.getString(
+                getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default));
+
+        Uri geoLocation = Uri.parse("geo:0,0?").buildUpon()
+                .appendQueryParameter("q",location)
+                .build();
+
+        //get implicit intent to open the maps app
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(geoLocation);
+
+        //start the activity only if the activity resolves soccessfully
+        if(intent.resolveActivity(getPackageManager()) != null){
+            startActivity(intent);
+        }
+        else{
+            Log.d(LOG_TAG, "Couldn't call " + location);
+        }
+    }
+
 }

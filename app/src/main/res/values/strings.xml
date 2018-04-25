@@ -18,7 +18,7 @@
     <string name="pref_units_label">Temperature Units</string>
 
     <!-- Label for metric option in temperature unit preference [CHAR LIMIT=25] -->
-    <string name="pref_units_label_metric">Metric</string>
+    <string name="pref_units_label_celsius">Celsius</string>
 
     <!-- Label for imperial option in temperature unit preference [CHAR LIMIT=25] -->
     <string name="pref_units_label_fahrenheit">Fahrenheit</string>
@@ -26,20 +26,22 @@
     <!-- Key name for temperature unit preference in SharedPreferences [CHAR LIMIT=NONE] -->
     <string name="pref_units_key" translatable="false">units</string>
 
-    <!-- Value in SharedPreferences for metric temperature unit option [CHAR LIMIT=NONE] -->
-    <string name="pref_units_metric" translatable="false">metric</string>
+    <!-- Value in SharedPreferences for celsius temperature unit option [CHAR LIMIT=NONE] -->
+    <string name="pref_units_celsius" translatable="false">celsius</string>
 
-    <!-- Value in SharedPreferences for imperial temperature unit option [CHAR LIMIT=NONE] -->
+    <!-- Value in SharedPreferences for fahrenheit temperature unit option [CHAR LIMIT=NONE] -->
     <string name="pref_units_fahrenheit" translatable="false">fahrenheit</string>
 
     <string-array name="pref_units_options">
-        <item>@string/pref_units_label_metric</item>
+        <item>@string/pref_units_label_celsius</item>
         <item>@string/pref_units_label_fahrenheit</item>
     </string-array>
 
     <string-array name="pref_units_values">
-        <item>@string/pref_units_metric</item>
+        <item>@string/pref_units_celsius</item>
         <item>@string/pref_units_fahrenheit</item>
     </string-array>
+
+    <string name="action_map">Map</string>
 
 </resources>
