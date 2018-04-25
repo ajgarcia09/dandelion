@@ -100,15 +100,6 @@ public class ForecastFragment extends Fragment {
         updateWeather();
     }
 
-   /*private void updateWeather(){
-        FetchWeatherTask weatherTask = new FetchWeatherTask();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        SharedPreferences.Editor prefsEditor = prefs.edit(); //create an editor for prefs
-        prefsEditor.putString("location",
-                ((EditText) findViewById(R.id.locationEditTextPref)).getText().toString());
-                //(EditText)findViewById(R.id.locationEditTextPref).getText().toString());
-        prefsEditor.commit();
-    }*/
 
     private void updateWeather(){
         FetchWeatherTask weatherTask = new FetchWeatherTask();
@@ -288,7 +279,7 @@ public class ForecastFragment extends Fragment {
          * @param low
          * @return
          */
-        private String formatHighLows(double high, double low){
+       /* private String formatHighLows(double high, double low){
             //For presentation, assume the user doesn't care about the tenths of a degree.
             long roundedHigh = Math.round(high);
             long roundedLow = Math.round(low);
@@ -296,7 +287,35 @@ public class ForecastFragment extends Fragment {
             String highLowStr = roundedHigh + "/" + roundedLow;
 
             return highLowStr;
-        }
+        }*/
+
+       private String formatHighLows(double high, double low){
+           /*Data is fetched in Celsius by default.
+           If user prefers to see in Fahrenheit, convert the values here.
+           We do this rather than fetching in Fahrenheit so that the user can
+           change this option without us having to re-fetch the data once
+           we start storing the values in a database.
+            */
+           SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+           String unitType = sharedPrefs.getString(
+                   getString(R.string.pref_units_key),
+                   getString(R.string.pref_units_metric));
+
+           if(unitType.equals(getString(R.string.pref_units_fahrenheit))){
+               high = (high *1.8) +32;
+               low = (low * 1.8) + 32;
+           } else if (!unitType.equals(getString(R.string.pref_units_metric))){
+               Log.d(LOG_TAG, "Unit type not found: "+ unitType);
+           }
+
+           //for presentation, assume the user doesn't care about tenths of a degree.
+
+           long roundedHigh = Math.round(high);
+           long roundedLow = Math.round(low);
+
+           String highLowStr = roundedHigh + "/" + roundedLow;
+           return highLowStr;
+       }
 
 
 
