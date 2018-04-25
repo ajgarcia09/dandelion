@@ -123,6 +123,8 @@ public class ForecastFragment extends Fragment {
         Log.v(LOG_TAG,"Executed weatherTast with location: " + location);
     }
 
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();

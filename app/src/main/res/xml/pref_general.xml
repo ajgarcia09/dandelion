@@ -2,13 +2,22 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-<PreferenceCategory android:title="Location">
-    <EditTextPreference
-        android:key="@string/pref_location_key"
-        android:title="Change My Location"
-        android:defaultValue="@string/pref_location_default"
-        android:inputType="text"
-        android:singleLine="true"/>
+    <PreferenceCategory android:title="Location">
+        <EditTextPreference
+            android:key="@string/pref_location_key"
+            android:title="Change My Location"
+            android:defaultValue="@string/pref_location_default"
+            android:inputType="text"
+            android:singleLine="true"/>
+    </PreferenceCategory>
 
-</PreferenceCategory>
+    <PreferenceCategory android:title="Units">
+        <ListPreference
+            android:title="Change Units"
+            android:key="@string/pref_units_key"
+            android:defaultValue="@string/pref_units_metric"
+            android:entryValues="@array/pref_units_values"
+            android:entries="@array/pref_units_options"
+            />
+    </PreferenceCategory>
 </PreferenceScreen>
