@@ -43,5 +43,6 @@
     </string-array>
 
     <string name="action_map">Map</string>
+    <string name="action_share">Share</string>
 
 </resources>
