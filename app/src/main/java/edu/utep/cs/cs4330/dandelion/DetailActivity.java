@@ -23,15 +23,9 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         if (savedInstanceState == null) {
-            Log.v(LOG_TAG, "about to create DetailFragment");
-            DetailFragment fragment = new DetailFragment();
-            Log.v(LOG_TAG, "Created detailFragment");
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
-            Log.v(LOG_TAG, "created PlaceholderFragment");
-            /*DetailFragment fragment = new DetailFragment()
-             //fragment.setArguments(arguments);*/
 
         }
 
@@ -42,7 +36,7 @@ public class DetailActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.detail, menu);
-        //getMenuInflater().inflate(R.menu.detailfragment,menu);
+        getMenuInflater().inflate(R.menu.detailfragment,menu);
         return true;
     }
 
@@ -68,6 +62,7 @@ public class DetailActivity extends AppCompatActivity {
     public static class PlaceholderFragment extends Fragment {
 
         public PlaceholderFragment() {
+
         }
 
         @Override
