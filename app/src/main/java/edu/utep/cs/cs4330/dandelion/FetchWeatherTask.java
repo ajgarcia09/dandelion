@@ -2,6 +2,7 @@ package edu.utep.cs.cs4330.dandelion;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -349,8 +350,29 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
                 First create a ContentValues object to hold the data you want to insert.
                  */
             ContentValues locationValues = new ContentValues();
+
+            /*Then add the data, along with the corresponding name of the data type
+            so the content provider knows what kind of value is being inserted.
+             */
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_CITY_NAME,cityName);
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING, locationSetting);
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LAT,lat);
+            locationValues.put(WeatherContract.LocationEntry.COLUMN_COORD_LONG,lon);
+
+            //Finally, insert location data into the database
+            Uri insertedUri = mContext.getContentResolver().insert(
+                    WeatherContract.LocationEntry.CONTENT_URI,
+                    locationValues
+            );
+
+            /*The resulting URI contains the ID for the row.
+            Extract the locationId from the Uri
+             */
+            locationId = ContentUris.parseId(insertedUri);
+
         }
-        return -1;
+        locationCursor.close();
+        return locationId;
     }
 
     /*
