@@ -3,14 +3,54 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:orientation="horizontal"
+    android:padding="16dp">
 
-    <TextView
-        android:id="@+id/list_item_forecast_textview"
-        android:layout_width="fill_parent"
+    <ImageView
+        android:id="@+id/list_item_icon"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20dp"
-        android:text="Today - Sunny - 88/63"
-        tools:layout_editor_absoluteX="92dp"
-        tools:layout_editor_absoluteY="138dp" />
+        android:src="@drawable/ic_launcher_background"/>
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingLeft="16dp">
+
+        <TextView
+             android:id="@+id/list_item_date_textview"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+              android:text="Tomorrow"/>
+
+        <TextView
+             android:id="@+id/list_item_forecast_textview"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="Clear"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/list_item_high_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="81"/>
+
+            <TextView
+                android:id="@+id/list_item_low_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="68"/>
+        </LinearLayout>
 </LinearLayout>
