@@ -7,8 +7,8 @@
     tools:context="edu.utep.cs.cs4330.dandelion.MainActivity">
 
     <fragment
-        android:name="edu.utep.cs.cs4330.dandelion.ForecastFragment"
         android:id="@+id/mainFragment"
+        android:name="edu.utep.cs.cs4330.dandelion.ForecastFragment"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"/>
 
