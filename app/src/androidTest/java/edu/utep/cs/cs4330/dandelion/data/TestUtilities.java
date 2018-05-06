@@ -10,10 +10,11 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.test.AndroidTestCase;
 
-import com.example.android.sunshine.app.utils.PollingCheck;
-
 import java.util.Map;
 import java.util.Set;
+
+import edu.utep.cs.cs4330.dandelion.utils.PollingCheck;
+
 
 /*
     Students: These are functions and some test data to make it easier to test your database and

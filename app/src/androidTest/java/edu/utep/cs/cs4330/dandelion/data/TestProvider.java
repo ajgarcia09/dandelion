@@ -27,8 +27,9 @@ import android.os.Build;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
-import com.example.android.sunshine.app.data.WeatherContract.LocationEntry;
-import com.example.android.sunshine.app.data.WeatherContract.WeatherEntry;
+import edu.utep.cs.cs4330.dandelion.data.WeatherContract.WeatherEntry;
+
+import edu.utep.cs.cs4330.dandelion.data.WeatherContract.LocationEntry;
 
 /*
     Note: This is not a complete set of tests of the Sunshine ContentProvider, but it does test
