@@ -3,6 +3,8 @@ package edu.utep.cs.cs4330.dandelion;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Fragment;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.icu.text.SimpleDateFormat;
@@ -36,6 +38,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Vector;
+
+import edu.utep.cs.cs4330.dandelion.data.WeatherContract.WeatherEntry;
 
 
 /**
@@ -51,7 +56,7 @@ public class ForecastFragment extends Fragment {
                              Bundle savedInstanceState){
 
 
-        forecastAdapter = new ArrayAdapter<String>(this.getActivity(),R.layout.list_item_forecast,
+        forecastAdapter = new ArrayAdapter<String>(getActivity(),R.layout.list_item_forecast,
                 R.id.list_item_forecast_textview,new ArrayList<String>());
 
         //inflate the layer for this fragment
@@ -102,7 +107,7 @@ public class ForecastFragment extends Fragment {
 
 
     private void updateWeather(){
-        FetchWeatherTask weatherTask = new FetchWeatherTask();
+        FetchWeatherTask weatherTask = new FetchWeatherTask(this.getActivity(),forecastAdapter);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         //if there's no value stored in prefs
         String location = prefs.getString(getString(R.string.pref_location_key),
@@ -132,7 +137,15 @@ public class ForecastFragment extends Fragment {
 
         private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
 
+        private ArrayAdapter<String> mForecastAdapter;
+        private final Context mContext;
 
+        public FetchWeatherTask(Context context, ArrayAdapter<String> forecastAdapter) {
+            mContext = context;
+            mForecastAdapter = forecastAdapter;
+        }
+
+        private boolean DEBUG = true;
         /** Take the String representing the complete forecast in JSON Format and
          * pull our the data we need to construct the Strings needed for the wireframes.
          *
@@ -183,23 +196,61 @@ public class ForecastFragment extends Fragment {
          next index in list, and so on...
          *
          * @param forecastJsonStr
-         * @param numDays
+         *
          * @return resultStrs
          * @throws JSONException
          */
 
         @SuppressLint("NewApi")
-        private String[] getWeatherDataFromJson(String forecastJsonStr, int numDays)throws JSONException{
+        private String[] getWeatherDataFromJson(String forecastJsonStr, String locationSetting)throws JSONException{
             //These are the names of the JSON objects that need to be extracted.
+
+            //Location information
+            final String OWM_CITY = "city";
+            final String OWM_CITY_NAME = "name";
+            final String OWM_COORD = "coord";
+
+            //location coordinate
+            final String OWM_LATITUDE = "lat";
+            final String OWM_LONGITUDE = "lon";
+
+            // Weather information.  Each day's forecast info is an element of the "list" array.
             final String OWM_LIST = "list";
-            final String OWM_WEATHER = "weather";
-            final String OWM_MAIN = "main"; //to obtain min and max temperatures
+
+            final String OWM_PRESSURE = "pressure";
+            final String OWM_HUMIDITY = "humidity";
+            final String OWM_WINDSPEED = "speed";
+            final String OWM_WIND_DIRECTION = "deg";
+
+            // All temperatures are children of the "temp" object.
+            final String OWM_TEMPERATURE = "temp";
             final String OWM_MAX = "temp_max";
             final String OWM_MIN = "temp_min";
+
+            final String OWM_WEATHER = "weather";
+            final String OWM_WEATHER_ID = "id";
+            final String OWM_WIND = "wind";
+
+
+            final String OWM_MAIN = "main"; //to obtain min and max temperatures
+
             final String OWM_DESCRIPTION = "main"; //to obtain weather description e.g. sunny, cloudy, windy
 
-            JSONObject forecastJson = new JSONObject(forecastJsonStr);
-            JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
+            try{
+               JSONObject forecastJson = new JSONObject(forecastJsonStr);
+               JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
+
+                JSONObject cityJson = forecastJson.getJSONObject(OWM_CITY);
+                String cityName = cityJson.getString(OWM_CITY_NAME);
+
+                JSONObject cityCoord = cityJson.getJSONObject(OWM_COORD);
+                double cityLatitude = cityCoord.getDouble(OWM_LATITUDE);
+                double cityLongitude = cityCoord.getDouble(OWM_LONGITUDE);
+
+                long locationId = addLocation(locationSetting, cityName, cityLatitude, cityLongitude);
+                // Insert the new weather information into the database
+                Vector<ContentValues> cVVector = new Vector<ContentValues>(weatherArray.length());
+
 
             /*OWM returns only daily forecasts based upon the local time of the city that is being
               asked for, which means that we need to know the GMT offset to translate this
@@ -218,42 +269,97 @@ public class ForecastFragment extends Fragment {
             //now we work exclusively in UTC
             dayTime = new Time();
 
-            String[] resultStrs = new String[numDays];
-            for(int i =0; i < numDays; i++){
+            for(int i =0; i < weatherArray.length(); i++) {
                 //for now, using the format "Day, description, hi/low"
-                String day;
-                String description;
-                String highAndLow;
+                // These are the values that will be collected.
+                long dateTime;
+                double pressure;
+                int humidity;
+                double windSpeed;
+                double windDirection;
 
+                double high;
+                double low;
+
+                String description;
+                int weatherId;
                 //Get each JSON object representing the day
                 JSONObject dayForecast = weatherArray.getJSONObject(i);
 
                 /*The date/time is returned as a long. We need to convert that into something
                 human-readable, since most people won't read "1400356800" as "this saturday"
                  */
-                long dateTime;
+
                 //Cheating to convert this to UTC time, which is what we want anyhow
-                dateTime = dayTime.setJulianDay(julianStartDay+i);
-                day = getReadableDateString(dateTime);
+                dateTime = dayTime.setJulianDay(julianStartDay + i);
 
                 //description is in a child array called "weather", which is 1 element long
                 JSONObject weatherObject = dayForecast.getJSONArray(OWM_WEATHER).getJSONObject(0);
                 description = weatherObject.getString(OWM_DESCRIPTION);
+                weatherId = weatherObject.getInt(OWM_WEATHER_ID);
 
                 //Temperatures are in a child object called "main"
                 JSONObject mainObject = dayForecast.getJSONObject(OWM_MAIN);
-                double high = mainObject.getDouble(OWM_MAX);
-                double low = mainObject.getDouble(OWM_MIN);
+                high = mainObject.getDouble(OWM_MAX);
+                low = mainObject.getDouble(OWM_MIN);
+                pressure = mainObject.getDouble(OWM_PRESSURE);
+                humidity = mainObject.getInt(OWM_HUMIDITY);
 
-                highAndLow = formatHighLows(high,low);
-                resultStrs[i] = day +" - " + description + " - " + highAndLow;
+                JSONObject windObject = dayForecast.getJSONObject(OWM_WIND);
+                windSpeed = windObject.getDouble(OWM_WINDSPEED);
+                windDirection = windObject.getDouble(OWM_WIND_DIRECTION);
+
+                ContentValues weatherValues = new ContentValues();
+
+                weatherValues.put(WeatherEntry.COLUMN_LOC_KEY, locationId);
+                weatherValues.put(WeatherEntry.COLUMN_DATE, dateTime);
+                weatherValues.put(WeatherEntry.COLUMN_HUMIDITY, humidity);
+                weatherValues.put(WeatherEntry.COLUMN_PRESSURE, pressure);
+                weatherValues.put(WeatherEntry.COLUMN_WIND_SPEED, windSpeed);
+                weatherValues.put(WeatherEntry.COLUMN_DEGREES, windDirection);
+                weatherValues.put(WeatherEntry.COLUMN_MAX_TEMP, high);
+                weatherValues.put(WeatherEntry.COLUMN_MIN_TEMP, low);
+                weatherValues.put(WeatherEntry.COLUMN_SHORT_DESC, description);
+                weatherValues.put(WeatherEntry.COLUMN_WEATHER_ID, weatherId);
+
+                cVVector.add(weatherValues);
             }
+// add to database
+                if ( cVVector.size() > 0 ) {
+                    // Student: call bulkInsert to add the weatherEntries to the database here
+                }
 
-            for(String s : resultStrs)
-                Log.v(LOG_TAG, "Forecast entry: "+s);
+                // Sort order:  Ascending, by date.
+                String sortOrder = WeatherEntry.COLUMN_DATE + " ASC";
+                Uri weatherForLocationUri = WeatherEntry.buildWeatherLocationWithStartDate(
+                        locationSetting, System.currentTimeMillis());
 
-            return resultStrs;
+                // Students: Uncomment the next lines to display what what you stored in the bulkInsert
+
+//            Cursor cur = mContext.getContentResolver().query(weatherForLocationUri,
+//                    null, null, null, sortOrder);
+//
+//            cVVector = new Vector<ContentValues>(cur.getCount());
+//            if ( cur.moveToFirst() ) {
+//                do {
+//                    ContentValues cv = new ContentValues();
+//                    DatabaseUtils.cursorRowToContentValues(cur, cv);
+//                    cVVector.add(cv);
+//                } while (cur.moveToNext());
+//            }
+
+                Log.d(LOG_TAG, "FetchWeatherTask Complete. " + cVVector.size() + " Inserted");
+
+                String[] resultStrs = convertContentValuesToUXFormat(cVVector);
+                return resultStrs;
+
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
+                e.printStackTrace();
+            }
+            return null;
         }
+
 
 
 
@@ -279,15 +385,6 @@ public class ForecastFragment extends Fragment {
          * @param low
          * @return
          */
-       /* private String formatHighLows(double high, double low){
-            //For presentation, assume the user doesn't care about the tenths of a degree.
-            long roundedHigh = Math.round(high);
-            long roundedLow = Math.round(low);
-
-            String highLowStr = roundedHigh + "/" + roundedLow;
-
-            return highLowStr;
-        }*/
 
        private String formatHighLows(double high, double low){
            /*Data is fetched in Celsius by default.
@@ -317,6 +414,43 @@ public class ForecastFragment extends Fragment {
            return highLowStr;
        }
 
+        /**
+         * Helper method to handle insertion of a new location in the weather database.
+         *
+         * @param locationSetting The location string used to request updates from the server.
+         * @param cityName A human-readable city name, e.g "Mountain View"
+         * @param lat the latitude of the city
+         * @param lon the longitude of the city
+         * @return the row ID of the added location.
+         */
+        long addLocation(String locationSetting, String cityName, double lat, double lon) {
+            // Students: First, check if the location with this city name exists in the db
+            // If it exists, return the current ID
+            // Otherwise, insert it using the content resolver and the base URI
+            return -1;
+        }
+
+        /*
+        Students: This code will allow the FetchWeatherTask to continue to return the strings that
+        the UX expects so that we can continue to test the application even once we begin using
+        the database.
+     */
+        String[] convertContentValuesToUXFormat(Vector<ContentValues> cvv) {
+            // return strings to keep UI functional for now
+            String[] resultStrs = new String[cvv.size()];
+            for ( int i = 0; i < cvv.size(); i++ ) {
+                ContentValues weatherValues = cvv.elementAt(i);
+                String highAndLow = formatHighLows(
+                        weatherValues.getAsDouble(WeatherEntry.COLUMN_MAX_TEMP),
+                        weatherValues.getAsDouble(WeatherEntry.COLUMN_MIN_TEMP));
+                resultStrs[i] = getReadableDateString(
+                        weatherValues.getAsLong(WeatherEntry.COLUMN_DATE)) +
+                        " - " + weatherValues.getAsString(WeatherEntry.COLUMN_SHORT_DESC) +
+                        " - " + highAndLow;
+            }
+            return resultStrs;
+        }
+
 
 
 
@@ -328,6 +462,7 @@ public class ForecastFragment extends Fragment {
 
            if(params.length == 0)
               return null;
+           String locationQuery = params[0];
 
             /**Need to be declared outside the try/catch
              * block so they will be closed in the finally block
@@ -426,7 +561,7 @@ public class ForecastFragment extends Fragment {
 
             }
             try{
-                return getWeatherDataFromJson(forecastJsonStr, numDays);
+                return getWeatherDataFromJson(forecastJsonStr, locationQuery);
             } catch(JSONException e){
                 Log.e(LOG_TAG, e.getMessage(),e);
                 e.printStackTrace();
