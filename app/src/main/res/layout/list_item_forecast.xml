@@ -25,12 +25,16 @@
         <TextView
              android:id="@+id/list_item_date_textview"
              android:layout_width="wrap_content"
-             android:layout_height="wrap_content"/>
+             android:layout_height="wrap_content"
+             android:fontFamily="sans-serif-condensed"
+             android:textAppearance="?android:textAppearanceLarge"/>
 
         <TextView
              android:id="@+id/list_item_forecast_textview"
              android:layout_width="wrap_content"
-             android:layout_height="wrap_content" />
+             android:layout_height="wrap_content"
+             android:fontFamily="sans-serif-condensed"
+             android:textAppearance="?android:textAppearanceSmall"/>
 
         </LinearLayout>
 
@@ -42,11 +46,15 @@
             <TextView
                 android:id="@+id/list_item_high_textview"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed"
+                android:textAppearance="?android:textAppearanceLarge"/>
 
             <TextView
                 android:id="@+id/list_item_low_textview"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed"
+                android:textAppearance="?android:textAppearanceSmall"/>
         </LinearLayout>
 </LinearLayout>
