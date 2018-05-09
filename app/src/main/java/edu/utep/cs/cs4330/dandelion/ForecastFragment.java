@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,6 +21,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import edu.utep.cs.cs4330.dandelion.data.WeatherContract;
+import edu.utep.cs.cs4330.dandelion.sync.DandelionSyncAdapter;
 
 
 /**
@@ -164,10 +164,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
 
     private void updateWeather(){
-        FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity());
-        String location = Utility.getPreferredLocation(getActivity());
-        weatherTask.execute(location);
-        Log.v(LOG_TAG,"Executed weatherTast with location: " + location);
+        //String location = Utility.getPreferredLocation(getActivity());
+        // new FetchWeatherTask(getActivity()).execute(location);
+        DandelionSyncAdapter.syncImmediately(getActivity());
     }
 
 
@@ -183,6 +182,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
         return super.onOptionsItemSelected(item);
     }
+
+
 
 
 }

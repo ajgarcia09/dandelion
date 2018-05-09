@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 
+import edu.utep.cs.cs4330.dandelion.sync.DandelionSyncAdapter;
+
 public class MainActivity extends AppCompatActivity {
     private final String LOG_TAG = MainActivity.class.getSimpleName();
     private String mLocation;
@@ -21,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
                     .add(new ForecastFragment(), FORECASTFRAGMENT_TAG)
                     .commit();
         }
+        DandelionSyncAdapter.initializeSyncAdapter(this);
 
 
     }
