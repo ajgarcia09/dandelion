@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void openPreferredLocationInMap(){
         //get the current location from preferences
-       String location = Utility.getPreferredLocation(this);
+        String location = Utility.getPreferredLocation(this);
 
         Uri geoLocation = Uri.parse("geo:0,0?").buildUpon()
                 .appendQueryParameter("q",location)
@@ -78,5 +78,4 @@ public class MainActivity extends AppCompatActivity {
             Log.d(LOG_TAG, "Couldn't call " + location);
         }
     }
-
 }
